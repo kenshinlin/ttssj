@@ -1,0 +1,50 @@
+var utils = require('../../utils/utils');
+var request = require('request');
+var settings = require('../../config/settings');
+
+var fetchUrl = `https://api.weixin.qq.com/sns/jscode2session?appid=${settings.wxAppID}&secret=${settings.wxAppSecret}&grant_type=authorization_code&js_code=`;
+
+var ctrl = {
+
+    fetchOpenId:function( req, params, cb ){
+
+        var code = params.code
+
+        if( !code ){
+            return cb({msg:"非法请求"})
+        }
+
+        request({
+            url: fetchUrl+code,
+            method: 'GET'
+        }, (err, res, body)=>{
+                if( err ){
+                    utils.log('fetchOpenId request err', err)
+                    cb( err )
+                }else{
+                    if( body ){
+                        try{
+                            body = JSON.parse( body )
+                            if( body.errcode ){
+                                utils.log('fetchOpenId wxresp body error', body.errmsg);
+                                cb({msg:body.errmsg})
+                            }else{
+                                cb(null, body)
+                            }
+                        }catch(e){
+                            utils.log('fetchOpenId JSON.parse error catch', body , e);
+                            cb({msg:e.message})
+                        }
+                    }else{
+                        cb({msg:"响应没有内容"})
+                    }
+                }
+        }).on('error', err=>{
+            console.log('fetchOpenId request onerror err', err)
+            cb(err)
+        })
+    }
+
+};
+
+module.exports = ctrl;

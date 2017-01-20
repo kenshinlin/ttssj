@@ -1,0 +1,13 @@
+{
+    "appenders": [
+        {
+            "type": "file",
+            "filename": "cheese.log",
+            "category": [ "cheese","console" ]
+        },
+        {
+            "type": "console"
+        }
+    ],
+    "replaceConsole": true
+}
