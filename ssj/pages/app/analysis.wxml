@@ -1,0 +1,123 @@
+<view>
+	<view class="text-large text-green flex text-center">
+		<view class="flex-grow sumary-item">	
+			<text class="text-desc text-small">{{curYear==selYear?'本':selYear}}年度支出</text>
+			<view class="lg">
+				{{yearPayout}}
+			</view>
+		</view>
+		<view class="flex-grow sumary-item">
+			<text class="text-desc text-small">{{curYear==selYear?'本':selYear}}年度收入</text>
+			<view class="lg">
+				{{yearIncome}}
+			</view>
+		</view>
+	</view>
+
+	<view class="text-center flex analysis-nav text-center {{noData?'none':''}}">
+		<view class="nav-item text-small text-desc {{ctxtype=='rate'?'on':''}}" data-ctxtype="rate" bindtap="switchCtx">
+			月支出占比
+		</view>
+		<view class="nav-item text-small text-desc {{ctxtype=='line'?'on':''}}" data-ctxtype="line" bindtap="switchCtx">
+			月支出走势
+		</view>
+	</view>
+
+	<view class="text-center text-desc text-small {{noData?'':'none'}}">{{selYear}}年{{selMonth}}月没有记账，无统计数据</view>
+	<view class="text-center" style="line-height:40rpx">
+	    <image class="icon-sm icon" src="./images/icon-left.png" bindtap="lastMonth"></image>
+	    <text class="text-small text-desc valign-center"> {{selYear}}-{{selMonth}} </text>
+	    <image class="icon-sm icon" src="./images/icon-right{{showNextMonthIcon?'':'-disabled'}}.png" bindtap="nextMonth"></image>
+	</view>
+	<view style="padding: 8px;" class="{{ctxtype=='rate'?'':'none'}} {{noData?'none':''}}">
+		<canvas canvas-id="tagRateCanvas" 
+			bindtouchstart="touchTagRateCanvas"
+			bindtouchend="end"
+			style="width:100%;height: {{ctxHeight}}px;"/>
+	</view>
+
+	<view style="padding: 8px;" class="{{ctxtype=='line'?'':'none'}} {{noData?'none':''}}">
+		<canvas canvas-id="lineCanvas" 
+			bindtouchstart="touchlineCanvas"
+			bindtouchmove="touchmovelineCanvas"
+			bindtouchend="touchlineCanvasEnd"
+			style="width:100%;height: {{lineCtxHeight}}px;"/>
+	</view>
+	
+	<view class="flow-list {{ctxtype=='rate'?'':'none'}} {{noData?'none':''}}">
+		<view class="text-desc text-small" style="padding: 10rpx;" wx:if="{{!!tagData.tag}}">
+			本月总支出{{monthTotalPayout}}，<text class="text-green">{{tagData.tag}}</text>支出{{tagData.value}}，占 <text class="text-green">{{tagData.rate}}%</text>，明细如下：
+		</view>
+		<view class="text-desc text-small" style="padding: 10rpx;" wx:if="{{!tagData.tag}}">
+			<text>点击图形查看明细</text>
+		</view>
+		<view class="flow-items-block"  
+			wx:key="time"
+			wx:for="{{flow}}" wx:for-index="i" wx:for-item="block">
+			<view class="info text-small flex flex-space-between">
+				<text>{{block.time}}</text>
+				<text>支出：{{block.payout}}</text>
+			</view>
+
+			<view class="items">
+				<view class="item" 
+					wx:for="{{block.items}}"	
+					wx:key="id"
+					wx:for-index="j" wx:for-item="item" data-mdfive="{{item.md5}}"
+					catchlongtap="confirmdelRecord"
+					>
+					<view class="inner flex flex-space-between">
+						<view class="text-normal">
+							<image class="icon" src="./images/icon-{{item.icon}}.png"></image>
+							<text class="text">{{item.tag}}</text>
+							<text class="text-desc text" style="margin-left:20rpx">{{item.comment}}</text>
+						</view>
+						<view class="text-large text-bold {{item.type=='income'?'text-green':''}}">
+							<text class="text">{{item.money}}</text>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<view class="flow-list {{ctxtype=='line'?'':'none'}} {{noData?'none':''}}">
+		<view class="text-desc text-small" style="padding: 10rpx;" wx:if="{{!!oneDayData.payout}}">
+			本月总支出{{monthTotalPayout}}，<text class="text-green">{{oneDayData.time}}</text>支出{{oneDayData.payout}}，明细如下：
+		</view>
+		<view class="text-desc text-small" style="padding: 10rpx;" wx:if="{{!!oneDayData.txt &&!oneDayData.payout}}">
+			{{oneDayData.txt}}当天无支出
+		</view>
+		<view class="text-desc text-small" style="padding: 10rpx;" wx:if="{{!oneDayData.txt}}">
+			<text>点击图形查看明细</text>
+		</view>
+
+		<view class="flow-items-block" wx:if="{{!!oneDayData.payout}}">
+
+			<view class="info text-small flex flex-space-between">
+				<text>{{oneDayData.time}}</text>
+				<text>支出：{{oneDayData.payout}}</text>
+			</view>
+
+			<view class="items">
+				<view class="item" 
+					wx:for="{{oneDayData.items}}"	
+					wx:key="id"
+					wx:for-index="j" wx:for-item="item" data-mdfive="{{item.md5}}"
+					catchlongtap="confirmdelRecord"
+					>
+					<view class="inner flex flex-space-between" wx:if="{{item.type=='payout'}}">
+						<view class="text-normal">
+							<image class="icon" src="./images/icon-{{item.icon}}.png"></image>
+							<text class="text">{{item.tag}}</text>
+							<text class="text-desc text" style="margin-left:20rpx">{{item.comment}}</text>
+						</view>
+						<view class="text-large text-bold {{item.type=='income'?'text-green':''}}">
+							<text class="text">{{item.money}}</text>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</view>

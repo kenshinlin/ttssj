@@ -1,0 +1,55 @@
+<section>
+	<view class="top-switch flex flex-center relative">
+		<view class="btn text-small {{type=='payout'?'selected':''}}" bindtap="switchType" data-type="payout">支出</view>
+		<view class="btn text-small {{type=='income'?'selected':''}}" bindtap="switchType" data-type="income">收入</view>
+
+		<icon type="cancel" class="cancel-right-top" bindtap="closeEditor"></icon>
+	</view>
+
+	<view class="input-panel flex">
+		<view class="text-small text-center">
+			<image src="./images/icon-{{selectedTag.icon}}.png" class="icon"></image>
+			<text>
+				{{selectedTag.tag}}
+			</text>
+		</view>
+		<view class="flex-grow text-right">
+			<input type="digit" auto-focus="true" bindinput="bindinput" placeholder="请输入金额" value="{{money}}" />
+		</view>
+		<view style="line-height: 88rpx;">元</view>
+	</view>
+
+	<view class="select-panel flex">
+		<view wx:for="{{tags}}" class="selct-icon-item" bindtap="selectTag" wx:key="tag" data-tag="{{item.tag}}" data-icon="{{item.icon}}">
+			<view class="relative" data-tag="{{item.tag}}" data-icon="{{item.icon}}">
+				<image 
+					data-tag="{{item.tag}}" data-icon="{{item.icon}}"
+					src="./images/icon-{{item.icon}}.png" class="icon"></image>
+				<icon wx:if="{{item.tag==selectedTag.tag}}" type="success_circle" 
+					color="red" size="15" class="selected-mark" />
+			</view>
+			<view class="text-small text-center relative" data-tag="{{item.tag}}" data-icon="{{item.icon}}">
+				{{item.tag}}
+			</view>
+		</view>
+	</view>
+
+	<view class="option-panel text-normal">
+		<picker mode="date" value="{{recordDate}}" end="{{pickerMaxDate}}" bindchange="bindDateChange">
+		    <view class="flex">
+			    <view class="label">时间</view>
+			    <view class="flex-grow">{{recordDate}}</view>
+			    <view class="text-desc text-small">不能选择未来的日期</view>
+			</view>
+	  	</picker>
+	  	<view class="comment flex">
+	  		<view class="label">备注</view>
+		  	<input type="text" class="flex-grow" placeholder="备注，例如：午餐" bindinput="bindCommentInput" value="{{comment}}"/>
+		  	<text class="text-desc">{{comment.length}}/10</text>
+	  	</view>
+	</view>
+
+	<view class="option-panel text-center">
+		<button type="warn" plain="true" bindtap="submitDataAndBack">提交</button>
+	</view>
+</section>

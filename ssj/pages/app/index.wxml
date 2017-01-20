@@ -1,0 +1,78 @@
+<view class="{{init?'':'none default-bg'}}">
+	<view>
+		<view class="banner flex flex-column">
+			<view class="text-center text-normal">{{username}}</view>
+			<view class="banner-budget text-center flex-grow">
+				<view class="banner-budget-money text-largest">{{ budgetBalance }}</view>
+				<view class="banner-budget-text text-normal-sub">本月预算余额</view>
+			</view>
+			<view class="banner-summary flex flex-center">
+				<view class="banner-summary-cell">
+					<view class="money text-normal">{{totalIncome}}</view>
+					<view class="text text-normal-sub">本月收入</view>
+				</view>
+				<view class="banner-summary-cell">
+					<view class="money text-normal">{{totalPayout}}</view>
+					<view class="text text-normal-sub">本月支出</view>
+				</view>
+			</view>
+		</view>
+
+		<view class="flow-list" style="padding-bottom: 120rpx;">
+
+			<view class="flow-items-block"  
+				wx:key="time"
+				wx:for="{{flow}}" wx:for-index="i" wx:for-item="block">
+				<view class="info text-small flex flex-space-between">
+					<text>{{block.time}}</text>
+					<text>收入：{{block.income}}  支出：{{block.payout}}</text>
+				</view>
+
+				<view class="items">
+					<view class="item" 
+						hover-class="on"
+						hover="true"
+						wx:for="{{block.items}}"	
+						wx:key="id"
+						wx:for-index="j" wx:for-item="item" data-mdfive="{{item.md5}}"
+						bindtouchstart="onFlowItemTouchStart"
+						bindtouchend="onFlowItemTouchEnd"
+						bindtouchmove="onFlowItemTouchMove"
+						bindlongtap="confirmdelRecord"
+						>
+						<view class="inner flex flex-space-between">
+							<view class="text-normal">
+								<image class="icon" src="./images/icon-{{item.icon}}.png"></image>
+								<text class="text">{{item.tag}}</text>
+								<text class="text-desc text" style="margin-left:20rpx">{{item.comment}}</text>
+							</view>
+							<view class="text-large text-bold {{item.type=='income'?'text-green':''}}">
+								<text class="text">{{item.money}}</text>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+
+	<view wx:if="{{!budgetModalHidden}}">
+		<view class="modal-mask"></view>
+		<view class="modal">
+			<view class="modal-header text-center text-large">设置预算</view>
+			<view class="modal-body">
+				<input type="digit" bindinput="budgetInputChange" value="{{budgetInput}}" />
+			</view>
+			<view class="modal-footer text-large flex">
+				<view class="btn" bindtap="hideBudgetModal">取消</view>
+				<view class="btn ok" bindtap="setBudget">确定</view>
+			</view>
+		</view>
+	</view>
+
+	<view class="footer flex flex-space-between">
+		<image src="./images/icon-analysis.png" class="icon" bindtap="showAnalysis"></image>
+		<image src="./images/icon-ji.png" class="icon icon-ji" bindtap="addRecord"></image>
+		<image src="./images/icon-flow.png" class="icon" bindtap="showBudgetModal"></image>
+	</view>
+</view>

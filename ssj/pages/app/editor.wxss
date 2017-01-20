@@ -1,0 +1,75 @@
+.top-switch{border-bottom: 1px solid #ddd;}
+
+.input-panel{
+	border-bottom: 1px solid #eee;
+	padding:  20rpx 40rpx;
+}
+.input-panel input{
+	height: 88rpx;
+	padding-right: 36rpx;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.top-switch .btn{
+	margin: 0 0 20rpx;
+	border-radius: 0 4px 4px 0;
+	padding: 10rpx 30rpx;
+	background-color: #FFF;
+	border:1px solid #E74C3C;
+}
+
+.top-switch .btn.selected{
+	background-color: #E74C3C;
+	color: #FFF;
+}
+
+.top-switch .btn:first-child{
+	border-radius: 4px 0 0 4px;
+}
+
+.top-switch .btn:last-child{
+	border-radius: 0 4px 4px 0;
+}
+
+.select-panel{
+	padding: 30rpx 6rpx;
+	flex-wrap: wrap;
+}
+.option-panel{
+	padding: 30rpx 40rpx;
+}
+
+.option-panel{
+	border-bottom: 1px solid #eee;
+	border-top: 1px solid #eee;
+	padding-bottom: 0;
+}
+
+.option-panel:last-child{border-top:none;}
+
+.option-panel picker{border-bottom:1px solid #eee;}	
+.option-panel picker, .option-panel .comment{
+	padding:20rpx 0;
+}
+
+.option-panel .label{width: 140rpx;}
+.option-panel .comment{line-height: 52rpx;}
+.selected-mark{
+	position: absolute;
+	bottom: -7rpx;
+	right: -16rpx;
+}
+
+.cancel-right-top{
+	position:absolute;
+	right: 20rpx;
+	/*top:10rpx;*/
+}
+.submit-record-btn{
+	border:2px solid #E74C3C;
+}
+
+.selct-icon-item{
+	margin: 10rpx 32rpx;
+}

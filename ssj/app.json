@@ -1,0 +1,15 @@
+{
+  "pages":[
+    "pages/index/index",
+
+    "pages/app/index",
+    "pages/app/editor"
+    ,"pages/app/analysis"
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#FFF",
+    "navigationBarTitleText": "天天随手记账",
+    "navigationBarTextStyle":"black"
+  }
+}
