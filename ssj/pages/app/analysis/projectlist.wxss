@@ -1,0 +1,23 @@
+/*.select-proj-item{
+	padding:24rpx;
+	text-align:center;
+	background:#eee;
+	border-radius:4rpx;
+}
+
+.select-proj-item+.select-proj-item{
+	margin-top:20rpx;
+}*/
+.panel.flex{
+	flex-wrap:wrap;
+	padding-top: 40rpx;
+}
+.select-proj-item{
+	border-radius: 24rpx;
+	border:1px solid #ddd;
+	padding: 6rpx 20rpx;
+	margin-bottom: 16rpx;
+}
+.select-proj-item+.select-proj-item{
+	margin-left: 16rpx;
+}

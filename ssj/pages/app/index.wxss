@@ -146,6 +146,14 @@
 .load-more{padding:16rpx 0;}
 
 .default-bg{background-color:#e64340}
+#btn-fb{
+	border:none;
+	color:#FFF;
+	padding:0;
+	margin-right: 10rpx;
+	line-height:1;
+	vertical-align:middle;
+}
 
 
 

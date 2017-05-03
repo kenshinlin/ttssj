@@ -1,5 +1,6 @@
 var app = getApp();
-var utils = require('../../utils/util.js')
+var utils = require('../../utils/util')
+var http = require('../../utils/http')
 
 Page({
     data:{
@@ -27,6 +28,7 @@ Page({
     onReachBottom:function(){
         !this.data.complete && this.requestFlowData()
     },
+
 
     fetchingMonth: null,
     fetchingYear: null,
@@ -94,7 +96,7 @@ Page({
 
         if( md5 ){
         	wx.navigateTo({
-        		url:"../app/editor?md5="+md5
+        		url:"./editor/editor?md5="+md5
         	})
         }
     },
@@ -124,7 +126,7 @@ Page({
 
     addRecord:function(){
     	wx.navigateTo({
-	      	url: '../app/editor'
+	      	url: './editor/editor'
 	    })
     },
 
@@ -133,33 +135,11 @@ Page({
 
         console.warn('删除', {md5:md5, openid: app.globalData.openid});
 
-        wx.request({
-            url: app.globalData.settings.host+'/record/del',
-            data: {md5:md5, openid: app.globalData.openid},
-            // header: {
-            //  openid: globalData.userInfo.openid||""
-            // },
-            method:"POST",
-            success:function(data){
-                data = data||{};
-
-                if( data.code == 0){
-                    // 更新localstorage 和 globalData
-                    // @TODO 等后台做好再放开
-                    // that.updateStorage(data.data);
-                }else{
-                    console.log('删除数据失败')
-                }
-            },
-            fail:function( data ){
-                data = data||{}
-                if( data.code!=0){
-                    // 提示 @TODO
-                    return;
-                }
-                // 提示未知错误
-            }
-        })
+        http.post({
+            url: '/record/del',
+            data: {md5:md5},
+            success:data=>{}
+        },app)
     },
 
     delLocalData:function(md5){
@@ -188,7 +168,7 @@ Page({
 
     showAnalysis:function(){
         wx.navigateTo({
-            url:"./analysis"
+            url:"./analysis/analysis"
         })
     },
 
@@ -213,6 +193,12 @@ Page({
         this.setData({
             budget:budgetInput,
             budgetBalance: utils.toFixed(budgetInput*1 - this.data.totalPayout)
+        })
+
+        wx.showToast({
+            title: '预算修改成功',
+            icon: 'success',
+            duration: 1000
         })
     },
 
@@ -304,50 +290,39 @@ Page({
     // 同步数据，计算并setData，替换localstorage,setGlobalData
     requestFlowData:function( cb ){
 
-        wx.request({
-            url: app.globalData.settings.host+'/record/list',
+        http.post({
+            url: '/record/list',
             data: {
-                openid: app.globalData.openid,
                 month: this.fetchingMonth,
                 year:this.fetchingYear
             },
-            // header: {
-            //  openid: globalData.userInfo.openid||""
-            // },
-            method:"POST",
-            success:res=>{
-                if( res.statusCode != 200)return;
-                
-                var data = res.data;
-
+            success:data=>{
                 var flowList = app.globalData.flowList||[];
-                if( data.code == 0 ){
-                    if(data.data && data.data.length){
-                        // 当月
-                        if( this.fetchingMonth == this.data.month && this.fetchingYear==this.data.year){
-                            flowList = data.data;
-                        }else{
-                            flowList = flowList.concat(data.data)
-                        }
-                        app.globalData.flowList = flowList;
-                        this.formatData(flowList);
-
-                        let recordDate = data.data[0].recordDate;
-                        recordDate = recordDate.split('-');
-                        let recordMonth = recordDate[1]*1;
-                        let recordYear = recordDate[0]*1;
-
-                        this.fetchingMonth = --recordMonth;
-                        if( this.fetchingMonth < 1){
-                            this.fetchingMonth = 12;
-                            this.fetchingYear = --recordYear;
-                        }
+                if(data && data.length){
+                    // 当月
+                    if( this.fetchingMonth == this.data.month && this.fetchingYear==this.data.year){
+                        flowList = data;
                     }else{
-                        this.setData({complete:true})
+                        flowList = flowList.concat(data)
                     }
+                    app.globalData.flowList = flowList;
+                    this.formatData(flowList);
+
+                    let recordDate = data[0].recordDate;
+                    recordDate = recordDate.split('-');
+                    let recordMonth = recordDate[1]*1;
+                    let recordYear = recordDate[0]*1;
+
+                    this.fetchingMonth = --recordMonth;
+                    if( this.fetchingMonth < 1){
+                        this.fetchingMonth = 12;
+                        this.fetchingYear = --recordYear;
+                    }
+                }else{
+                    this.setData({complete:true})
                 }
             },
             complete:()=>typeof cb =='function' && cb()
-        })
+        }, app)
     }
 })

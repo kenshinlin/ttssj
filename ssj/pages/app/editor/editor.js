@@ -1,5 +1,7 @@
 var app = getApp();
-var md5 = require('../../utils/md5');
+var md5 = require('../../../utils/md5');
+var http = require('../../../utils/http');
+
 var globalData = app.globalData;
 var settings = globalData.settings;
 
@@ -63,8 +65,10 @@ Page({
 		type:"payout",
 		money:"",
 		recordDate:"",
-		pickerMaxDate:""
+		pickerMaxDate:"",
+		project:""
 	},
+
 
 	isEdit:false,
 
@@ -84,11 +88,31 @@ Page({
 
 	},
 
+	onShow:function() {
+		// 从选择项目的页面回来
+		this.setData({
+			project:app.globalData.selectProject||""
+		})
+	},
+
+	// 页面卸载的时候清除缓存所选项目
+	onUnload:function () {
+		app.globalData.selectProject = null;	
+	},
+
 	onReady:function(){
 		let t = "添加记录";
 		if(this.isEdit){t="修改记录"}
         wx.setNavigationBarTitle({title:t})
     },
+
+    onShareAppMessage: function () {
+      	return {
+          	title: '天天随手记账',
+          	desc: '一款不会上传用户信息的记账小程序',
+          	path: 'pages/index/index'
+      	}
+  	},
 
 	loadRecord:function(md5){
 		var flowList = app.globalData.flowList||[];
@@ -107,8 +131,10 @@ Page({
 				money: record.money,
 				comment: record.comment,
 				recordDate: record.recordDate,
-				md5: md5
+				md5: md5,
+				project: record.project
 			});
+			app.globalData.selectProject = record.project
 		}else{
 			this.loadRecordFromRemote(md5)
 		}
@@ -117,50 +143,30 @@ Page({
 
 	loadRecordFromRemote:function(md5){
 
-		wx.request({
-            url: app.globalData.settings.host+'/record/item/'+md5,
-            data: {
-                openid: app.globalData.openid
-            },
-            method:"GET",
-            success:res=>{
-           		if( res.statusCode != 200)return;
-                
-                var data = res.data;
+		http.get({
+            url: '/record/item/'+md5,
+            success:data=>{
+            	if( !!data ){
+            		var record = data;
 
-                // 正确
-                if( data.code == 0 ){
-                	if( !!data.data ){
-                		var record = data.data;
+            		this.setData({
+						tags: this.tags[record.type],
+						selectedTag:{
+							tag: record.tag,
+							icon: record.icon
+						},
+						type: record.type,
+						money: record.money,
+						comment: record.comment,
+						recordDate: record.recordDate,
+						md5: md5,
+						project: record.project
+					});
 
-                		this.setData({
-							tags: this.tags[record.type],
-							selectedTag:{
-								tag: record.tag,
-								icon: record.icon
-							},
-							type: record.type,
-							money: record.money,
-							comment: record.comment,
-							recordDate: record.recordDate,
-							md5: md5
-						});
-                	}else{
-                		wx.showModal({
-                			title:"提示",
-                			content:"加载失败，请重试",
-                			showCancel:false
-                		})
-                	}
-                }else{
-                	wx.showModal({
-						title:"提示",
-						content: data.msg||"记录加载失败，请重试",
-						showCancel:false
-					})
-                }
+					app.globalData.selectProject = record.project
+            	}
             }
-        });
+        }, app)
 	},
 
 	initDate:function(){
@@ -207,10 +213,25 @@ Page({
 	},
 
 	closeEditor:function(){
+		this.goHome()
+	},
+
+	goHome:function () {
+		// wx.redirectTo({
+		// 	url:'../index'
+		// })
 		wx.navigateBack()
 	},
 
+	/**
+	 * 提交数据
+	 * @return {[type]} [description]
+	 */
 	submitDataAndBack:function(){
+		let project
+		if( this.data.project ){
+			project = this.data.project.trim()
+		}
 
 		var data = {
 			tag: this.data.selectedTag.tag,
@@ -218,7 +239,8 @@ Page({
 			type: this.data.type,
 			money: this.data.money,
 			comment: this.data.comment,
-			recordDate: this.data.recordDate
+			recordDate: this.data.recordDate,
+			project: project
 		}
 
 		if( !data.money ){
@@ -233,7 +255,7 @@ Page({
 		if( this.data.md5 ){
 
 			this.editData( this.data.md5 );
-			wx.navigateBack()
+			this.goHome()
 			this.addData( data )
 
 		}else{
@@ -243,6 +265,7 @@ Page({
 			  	icon: 'success',
 			  	duration: 1000
 			})
+
 			this.setData({
 				money:"",
 				comment:""
@@ -258,38 +281,15 @@ Page({
 		this.delLocalData(md5);
 	},
 
+
 	delRemoteData:function(md5){
-		var that = this;
 
-		console.warn('删除', {md5:md5, openid: app.globalData.openid});
-
-		wx.request({
-			url: settings.host+'/record/del',
-			data: {md5:md5, openid: app.globalData.openid},
-			// header: {
-			// 	openid: globalData.userInfo.openid||""
-			// },
-			method:"POST",
-			success:function(data){
-				data = data||{};
-
-				if( data.code == 0){
-					// 更新localstorage 和 globalData
-					// @TODO 等后台做好再放开
-					// that.updateStorage(data.data);
-				}else{
-					console.log('删除数据失败')
-				}
-			},
-			fail:function( data ){
-				data = data||{}
-				if( data.code!=0){
-					// 提示 @TODO
-					return;
-				}
-				// 提示未知错误
-			}
-		})
+		http.post({
+			url: '/record/del',
+			data: {md5:md5},
+			success:data=>{},
+			fail:msg=>{}
+		}, app)
 	},
 
 	delLocalData:function(md5){
@@ -423,39 +423,20 @@ Page({
 
 	},
 
+	/**
+	 * 提交数据到服务器
+	 * @param  {[type]} data 一条记账记录
+	 * @return {[type]}      [description]
+	 */
 	submitData:function(data){
 		var that = this;
 
-
-		data.openid = app.globalData.openid;
-
-		wx.request({
-			url: settings.host+'/record/item',
-			data: data,
-			// header: {
-			// 	openid: globalData.openid||""
-			// },
-			method:"POST",
-			success:function(data){
-				data = data||{};
-
-				if( data.code == 0){
-					// 更新localstorage 和 globalData
-					// @TODO 等后台做好再放开
-					// that.updateStorage(data.data);
-				}
-			},
-			fail:function( data ){
-				data = data||{}
-				if( data.code!=0){
-					// 提示 @TODO
-					return;
-				}
-				// 提示未知错误
-			}
-		})
-
-
+		http.post({
+			url: '/record/item',
+			data:data,
+			success:data=>{},
+			fail:msg=>{}
+		}, app)
 	},
 
 	selectTag:function(e){
@@ -495,5 +476,11 @@ Page({
 				selectedTag: this.tags[type][0]
 			})
 		}
+	},
+
+	onProjectFocus:function (e) {
+		wx.navigateTo({
+			url: './selectproject'
+		})
 	}
 })

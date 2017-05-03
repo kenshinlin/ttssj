@@ -37,7 +37,7 @@
 	flex-wrap: wrap;
 }
 .option-panel{
-	padding: 30rpx 40rpx;
+	padding: 18rpx 40rpx;
 }
 
 .option-panel{
@@ -48,7 +48,7 @@
 
 .option-panel:last-child{border-top:none;}
 
-.option-panel picker{border-bottom:1px solid #eee;}	
+/*.option-panel picker{border-bottom:1px solid #eee;}	*/
 .option-panel picker, .option-panel .comment{
 	padding:20rpx 0;
 }

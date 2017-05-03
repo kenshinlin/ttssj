@@ -47,3 +47,12 @@ page{height: 100%;}
 
 .relative{position: relative;}
 .none{display:none}
+
+.panel{
+  padding: 20rpx;
+}
+.icon-fb{
+  width:34rpx;
+  height:34rpx;
+  vertical-align:middle;
+}

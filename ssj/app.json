@@ -3,8 +3,14 @@
     "pages/index/index",
 
     "pages/app/index",
-    "pages/app/editor"
-    ,"pages/app/analysis"
+    "pages/app/editor/editor",
+    "pages/app/editor/selectproject",
+
+
+    "pages/app/analysis/analysis",
+    "pages/app/analysis/project",
+    "pages/app/analysis/projectlist"
+
   ],
   "window":{
     "backgroundTextStyle":"light",

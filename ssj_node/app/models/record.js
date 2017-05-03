@@ -8,7 +8,8 @@ module.exports = function (orm, db) {
         icon:{type:"text", required:true},
         comment:{type:'text'},
         type:{type:"text", required:true},
-        md5:{type:"text", required:true, size:64}
+        md5:{type:"text", required:true, size:64},
+        project:{type:"text", size:45}
     },{
         hooks:{
             beforeValidation:function () {

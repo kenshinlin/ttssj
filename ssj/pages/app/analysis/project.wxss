@@ -1,0 +1,24 @@
+.flow-list{margin-top:16rpx;}
+.flow-items-block .info{
+	padding: 16rpx 40rpx;
+	background-color:#ECF0F1; 
+}
+/*.flow-items-block .items .item{*/
+.flow-items-block .items .item .inner{
+	padding: 30rpx 0;
+	margin: auto 40rpx;
+	border-bottom: 1px solid #eee;
+	line-height: 60rpx;
+}
+.flow-items-block .items .item .inner .text{display: inline-block;vertical-align: middle;}
+
+
+.flow-items-block .items .item.on{
+	background-color: #ddd;
+}
+
+.flow-items-block .items .item:last-child .inner{border-bottom: none;}
+
+
+.sumary-item{padding:30rpx 0;}
+.sumary-item .lg{margin-top: 16rpx;font-size: 60rpx;font-weight:bolder; }

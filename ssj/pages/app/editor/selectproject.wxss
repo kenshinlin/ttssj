@@ -1,0 +1,26 @@
+
+.project-list-panel{
+	margin-top: 50rpx;
+}
+.select-proj-panel{
+	/*border-top:1px solid #ddd;*/
+	margin-top: 20rpx;
+	flex-wrap:wrap;
+}
+.select-proj-item{
+	border-radius: 24rpx;
+	border:1px solid #ddd;
+	padding: 6rpx 20rpx;
+	margin-bottom: 16rpx;
+}
+.select-proj-item+.select-proj-item{
+	margin-left: 16rpx;
+}
+
+.input-panel{
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 10rpx;
+	margin-right: 20rpx;
+}
+
+.input-panel input{width: 100%;}

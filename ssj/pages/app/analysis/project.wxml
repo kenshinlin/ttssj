@@ -1,0 +1,46 @@
+<view class="panel">
+
+	<view class="text-green text-center">
+		<view class="flex-grow sumary-item">	
+			<view class="text-desc text-normal">
+				<text class="text-green">{{project}}</text> 
+				 发生金额
+			</view>
+			<view class="lg">
+				{{total}}
+			</view>
+		</view>
+	</view>
+
+	<view class="flow-list text-normal" wx:if="{{total>0}}">
+		<view class="text-desc text-small" style="margin-bottom: 10rpx;">明细如下</view>
+		<view class="flow-items-block"  
+			wx:key="time"
+			wx:for="{{flow}}" wx:for-index="i" wx:for-item="block">
+			<view class="info text-small flex flex-space-between">
+				<text>{{block.time}}</text>
+				<text wx:if="{{block.payout}}">支出：{{block.payout}}</text>
+				<text wx:if="{{block.income}}">收入：{{block.income}}</text>
+			</view>
+
+			<view class="items">
+				<view class="item" 
+					wx:for="{{block.items}}"	
+					wx:key="id"
+					wx:for-index="j" wx:for-item="item" data-mdfive="{{item.md5}}"
+					>
+					<view class="inner flex flex-space-between">
+						<view class="text-normal">
+							<image class="icon" src="../images/icon-{{item.icon}}.png"></image>
+							<text class="text">{{item.tag}}</text>
+							<text class="text-desc text" style="margin-left:20rpx">{{item.comment}}</text>
+						</view>
+						<view class="text-large text-bold {{item.type=='income'?'text-green':''}}">
+							<text class="text">{{item.money}}</text>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</view>

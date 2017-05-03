@@ -1,7 +1,18 @@
 <view class="{{init?'':'none default-bg'}}">
 	<view>
 		<view class="banner flex flex-column">
-			<view class="text-center text-normal">{{username}}</view>
+			<view class="text-center text-normal">
+				{{username}}
+				<button type="default" 
+		              open-type="contact" 
+		              plain="true"
+		              size="mini"
+		              hover-class="other-button-hover" 
+		              session-from="bootindex"
+		              id="btn-fb">
+		              <image src="./images/icon-fb-w.png" class="icon-fb"></image>
+		        </button>
+			</view>
 			<view class="banner-budget text-center flex-grow">
 				<view class="banner-budget-money text-largest">{{ budgetBalance }}</view>
 				<view class="banner-budget-text text-normal-sub">本月预算余额</view>

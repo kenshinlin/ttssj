@@ -1,7 +1,9 @@
 var app = getApp();
 
-var Line = require('../../utils/line.js');
-var Bar = require('../../utils/bar.js');
+var Line = require('../../../utils/line.js');
+var Bar = require('../../../utils/bar.js');
+var utils = require('../../../utils/util.js')
+var http = require('../../../utils/http')
 
 Page({
 	data:{
@@ -13,7 +15,10 @@ Page({
 
 		lineCtxHeight: 400,
 		ctxtype:"rate",
-		oneDayData: {}
+		oneDayData: {},
+
+		mlineCtxHeight: 400,
+		oneMonthData: {}
 
 		,selYear: 0
 		,selMonth:0,
@@ -21,8 +26,11 @@ Page({
 
 		,monthTotalPayout:0
 		,noData:false
+
+		,projects:[]
 	},
 	lineCtx:null,
+	mlineCtx: null,
 	barCtx: null,
 
 	onReady:function(){
@@ -37,6 +45,8 @@ Page({
 		})
 		this.getYearSummary()
 		this.getMonthData( flowList =>this.drawCtx(flowList));
+		// this.getLastYearData() //1年数据，画月支出趋势图
+		this.fetchProjects()
 	},
 
 	drawCtx:function(flowList){
@@ -51,6 +61,34 @@ Page({
 
 	switchCtx:function(e){
 		this.setData({ctxtype:e.target.dataset.ctxtype});
+	},
+
+	/**
+	 * 一年数据，按月汇总
+	 * @return {[type]} [description]
+	 */
+	getLastYearData:function () {
+		let start; //上一年
+		let end; //上个月
+
+		let month = app.globalData.month;
+		month = '0'+ month;
+		month = month.substr(-2);
+		let year = app.globalData.year;
+
+		start = [year, month, '00'].join('-')
+		end = [--year, month, '00'].join('-')
+
+		http.get({
+			url:'/record/permonthpayout/',
+			data:{
+				start: start,
+				end:end
+			},
+			success:data=>{
+
+			}
+		}, app)
 	},
 
 	lastMonth:function(){
@@ -87,104 +125,62 @@ Page({
 	},
 
 	getYearSummary:function(year){
-		wx.showToast({
-          title: '加载中',
-          icon: 'loading',
-          duration: 10000,
-          mask:true
-        })
 
-		let query = {
-            openid: app.globalData.openid,
-		}
+		let query = {}
 		!!year && (query.year = year);
 
-		wx.request({
-            url: app.globalData.settings.host+'/record/year/summary',
+		http.get({
+            url: '/record/year/summary',
             data: query,
-            method:"GET",
-            success:res=>{
-                if( res.statusCode != 200)return;
-                
-                var data = res.data;
+            success:data=>{
+                if(data&&data.length){
 
-                if( data.code == 0 ){
-                    if(data.data&&data.data.length){
-
-                    	data.data.forEach( d=>{
-                    		if( d.type =='payout'){
-		                    	this.setData({yearPayout:d.money})
-                    		}else{
-                    			this.setData({yearIncome:d.money})
-                    		}
-                    	})
-                    }
-                }else{
-                	wx.showModal({
-			            title: '警告',
-			            content: '获取年度数据失败',
-			            showCancel:false
-			        })
+                	data.forEach( d=>{
+                		if( d.type =='payout'){
+	                    	this.setData({yearPayout:d.money})
+                		}else{
+                			this.setData({yearIncome:d.money})
+                		}
+                	})
                 }
             },
-            fail:e=>{
+            error:msg=>{
             	wx.showModal({
 		            title: '警告',
 		            content: '获取年度数据失败',
 		            showCancel:false
 		        })
-            },
-            complete:e=>{wx.hideToast();}
-        })
+            }
+        }, app)
 	},
 
 	getMonthData:function(cb, year, month){
-		wx.showToast({
-          title: '加载中',
-          icon: 'loading',
-          duration: 10000,
-          mask:true
-        })
-        wx.request({
-            url: app.globalData.settings.host+'/record/monthlist',
+		
+        http.post({
+            url: '/record/monthlist',
             data: {
-                openid: app.globalData.openid,
                 month: month||this.data.selMonth,
                 year: year||this.data.selYear
             },
-            method:"POST",
-            success:res=>{
-                if( res.statusCode != 200)return;
-                
-                var data = res.data;
+            success:data=>{
 
-                if( data.code == 0 ){
-                	// 有数据才画图
-                    if(data.data && data.data.length){
-                    	this.setMonthTotalPayout(data.data);
-                    	cb && cb(data.data)
-                    	this.setData({"noData":false})
-                    }else{
-                    	this.setData({"noData":true})
-                    }
+            	// 有数据才画图
+                if(data && data.length){
+                	this.setMonthTotalPayout(data);
+                	cb && cb(data)
+                	this.setData({"noData":false})
                 }else{
-                	wx.showModal({
-			            title: '警告',
-			            content: '获取月度数据失败',
-			            showCancel:false
-			        })
-			        this.setData({"noData":true})
+                	this.setData({"noData":true})
                 }
             },
-            fail:e=>{
+            error:e=>{
             	wx.showModal({
 		            title: '警告',
 		            content: '获取月度数据失败',
 		            showCancel:false
 		        })
-            },
-            complete:e=>wx.hideToast()
-        })
+            }
+        }, app)
 	},
 
 	setMonthTotalPayout:function(flowList){
@@ -201,6 +197,8 @@ Page({
 				t = t+item.money*1
 			}
 		})
+
+		t = utils.toFixed(t)
 
 		this.setData({monthTotalPayout: t})
 		this.monthTotalPayout = t;
@@ -226,8 +224,10 @@ Page({
 
     		if( item.type == 'payout'){
 	    		recordData.payout = recordData.payout*1 + item.money*1;
+	    		recordData.payout = utils.toFixed( recordData.payout )
     		}else{
     			recordData.income = recordData.income*1 + item.money*1;
+	    		recordData.income = utils.toFixed( recordData.income )
     		}
 
     		let txt = item.recordDate.split('-')
@@ -250,6 +250,10 @@ Page({
     	}
 		result.sort((a,b)=>a.txt>b.txt?1:-1)
     	return result;
+	},
+
+	calMLineData:function (perMonthPayout) {
+			
 	},
 
 	calTagRateData:function( flowList){
@@ -295,7 +299,7 @@ Page({
     		recordData.items.push( item );
 
     		if( item.type == 'payout'){
-	    		recordData.payout = recordData.payout*1 + item.money*1;
+	    		recordData.payout = utils.toFixed(recordData.payout*1 + item.money*1);
     		}
     	})
 
@@ -321,6 +325,21 @@ Page({
 			onTouch: e=>this.setData({ oneDayData: e.serie })
 		})
 
+		return line;
+	},
+
+	drawMLine:function (perMonthPayout) {
+		let data = this.calMLineData(perMonthPayout)
+
+		if( !data||!data.length )return;
+
+		var line = new Line()
+		line.draw({
+			renderTo: 'mlineCanvas',
+			series: data,
+			setCanvasSize: o=>this.setData({mlineCtxHeight:o.height}),
+			onTouch: e=>this.loadMonthFlow(e.serie)
+		})
 		return line;
 	},
 
@@ -351,7 +370,7 @@ Page({
 
 				this.setData({tagData: {
 					tag: serie.tag,
-					value: serie.value,
+					value: utils.toFixed(serie.value),
 					rate: serie.rate
 				}})
 			}
@@ -364,6 +383,40 @@ Page({
 		return this.barCtx.onTouch(e);
 	},
 
-	end:function(e){return this.barCtx.onTouchEnd(e)}
+	end:function(e){return this.barCtx.onTouchEnd(e)},
+
+
+	/**
+	 * 有专项才显示专项
+	 * @return {[type]} [description]
+	 */
+	fetchProjects:function() {
+		if( app.globalData.projects ){
+			this.setData({projects: app.globalData.projects})
+		}else{
+			http.get({
+				url:"/project/",
+				data: {
+	                openid: app.globalData.openid
+	            },
+	            success:data=>{
+	            	let projects = [];
+                	if( data && data.length){
+                		data.forEach(item=>{
+                			!!item && !!item.project && projects.push(item.project)
+                		})
+                	}
+
+            		// projects = ['装修', '爸妈医疗', '买房', '车', '孩子培训班', '学唱歌','研究生', '考试', '2017年去日本']
+
+                	this.setData({	
+                		projects: projects
+                	})
+
+                	app.globalData.projects = projects;
+                }
+			}, app)
+		}
+	}
 
 })

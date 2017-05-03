@@ -1,5 +1,6 @@
 var user = require('../app/routes/user');
 var record = require('../app/routes/record');
+var project = require('../app/routes/project');
 
 // var upload = require('../app/routes/upload');
 
@@ -8,6 +9,7 @@ module.exports = function (app) {
 	app.use('/user', user);
 	// app.use('/upload', upload);
 	app.use('/record', record);
+	app.use('/project', project);
 	
 	
 	// 拿一个csrf token

@@ -1,0 +1,27 @@
+<view class="panel text-normal">
+	<view class="flex">
+		<view class="input-panel flex-grow">
+			<input type="text" class="flex-grow" auto-focus="true" placeholder="输入新项目" bindinput="onProjectChange" value="{{projectInput}}"/>
+		</view>
+		<view>
+			<button size="mini" type="warn" bindtap="saveProject">确定</button>
+		</view>
+	</view>
+	
+	<view wx:if="{{projects.length>0}}" class="project-list-panel">
+		<text class="text-desc">可选项目</text>
+		<view class="select-proj-panel flex">
+			<view wx:for="{{projects}}" wx:key="proj" class="select-proj-item text-small" bindtap="selectProject" data-proj="{{item}}">
+				{{item}}
+			</view>
+		</view>
+	</view>
+
+
+	<view class="text-small text-desc" style="margin-top: 250rpx;">
+		<text class="text-normal">使用场景介绍</text>
+		<view style="margin-top: 24rpx;line-height: 1.2;">
+			例如您最近装修房子，那么添加一个名为「装修」的项目，将与其相关的花销都选入本项目。记账成功后，进入「统计」页面，即可查看该项目的所有花销。
+		</view>
+	</view>
+</view>

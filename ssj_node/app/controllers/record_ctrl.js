@@ -14,7 +14,8 @@ var ctrl = {
             tag: params.tag,
             icon: params.icon,
             comment: params.comment,
-            type: params.type
+            type: params.type,
+            project:params.project
         }, (err, record)=>{
             if( err ) {
                 utils.log('record_ctrl create err', err)

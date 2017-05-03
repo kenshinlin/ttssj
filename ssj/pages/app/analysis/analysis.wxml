@@ -13,21 +13,31 @@
 			</view>
 		</view>
 	</view>
-
+	<view class="panel text-desc text-small" wx:if="{{projects&&projects.length}}">
+		<navigator class url="./projectlist">
+			<image src="../images/icon-link.png" class="icon-fb"></image>
+			查看专项统计
+		</navigator>
+	</view>
 	<view class="text-center flex analysis-nav text-center {{noData?'none':''}}">
 		<view class="nav-item text-small text-desc {{ctxtype=='rate'?'on':''}}" data-ctxtype="rate" bindtap="switchCtx">
 			月支出占比
 		</view>
 		<view class="nav-item text-small text-desc {{ctxtype=='line'?'on':''}}" data-ctxtype="line" bindtap="switchCtx">
+			天支出走势
+		</view>
+		<view class="nav-item text-small text-desc {{ctxtype=='mline'?'none':'none'}}" data-ctxtype="mline" bindtap="switchCtx">
 			月支出走势
 		</view>
 	</view>
 
-	<view class="text-center text-desc text-small {{noData?'':'none'}}">{{selYear}}年{{selMonth}}月没有记账，无统计数据</view>
-	<view class="text-center" style="line-height:40rpx">
-	    <image class="icon-sm icon" src="./images/icon-left.png" bindtap="lastMonth"></image>
+	<view class="text-center text-desc text-small {{noData?'':'none'}}">
+		{{selYear}}年{{selMonth}}月没有记账，无统计数据
+	</view>
+	<view class="text-center {{ctxtype=='mline'?'none':''}}" style="line-height:40rpx">
+	    <image class="icon-sm icon" src="../images/icon-left.png" bindtap="lastMonth"></image>
 	    <text class="text-small text-desc valign-center"> {{selYear}}-{{selMonth}} </text>
-	    <image class="icon-sm icon" src="./images/icon-right{{showNextMonthIcon?'':'-disabled'}}.png" bindtap="nextMonth"></image>
+	    <image class="icon-sm icon" src="../images/icon-right{{showNextMonthIcon?'':'-disabled'}}.png" bindtap="nextMonth"></image>
 	</view>
 	<view style="padding: 8px;" class="{{ctxtype=='rate'?'':'none'}} {{noData?'none':''}}">
 		<canvas canvas-id="tagRateCanvas" 
@@ -42,6 +52,14 @@
 			bindtouchmove="touchmovelineCanvas"
 			bindtouchend="touchlineCanvasEnd"
 			style="width:100%;height: {{lineCtxHeight}}px;"/>
+	</view>
+
+	<view style="padding: 8px;" class="{{ctxtype=='mline'?'':'none'}} {{noData?'none':''}}">
+		<canvas canvas-id="mlineCanvas" 
+			bindtouchstart="touchmlineCanvas"
+			bindtouchmove="touchmovemlineCanvas"
+			bindtouchend="touchmlineCanvasEnd"
+			style="width:100%;height: {{mlineCtxHeight}}px;"/>
 	</view>
 	
 	<view class="flow-list {{ctxtype=='rate'?'':'none'}} {{noData?'none':''}}">
@@ -64,11 +82,10 @@
 					wx:for="{{block.items}}"	
 					wx:key="id"
 					wx:for-index="j" wx:for-item="item" data-mdfive="{{item.md5}}"
-					catchlongtap="confirmdelRecord"
 					>
 					<view class="inner flex flex-space-between">
 						<view class="text-normal">
-							<image class="icon" src="./images/icon-{{item.icon}}.png"></image>
+							<image class="icon" src="../images/icon-{{item.icon}}.png"></image>
 							<text class="text">{{item.tag}}</text>
 							<text class="text-desc text" style="margin-left:20rpx">{{item.comment}}</text>
 						</view>
@@ -104,11 +121,10 @@
 					wx:for="{{oneDayData.items}}"	
 					wx:key="id"
 					wx:for-index="j" wx:for-item="item" data-mdfive="{{item.md5}}"
-					catchlongtap="confirmdelRecord"
 					>
 					<view class="inner flex flex-space-between" wx:if="{{item.type=='payout'}}">
 						<view class="text-normal">
-							<image class="icon" src="./images/icon-{{item.icon}}.png"></image>
+							<image class="icon" src="../images/icon-{{item.icon}}.png"></image>
 							<text class="text">{{item.tag}}</text>
 							<text class="text-desc text" style="margin-left:20rpx">{{item.comment}}</text>
 						</view>
