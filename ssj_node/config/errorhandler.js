@@ -1,3 +1,5 @@
+var utils = require('../utils/utils')
+
 module.exports = function (app) {
 	// catch 404 and forward to error handler
 	app.use(function(req, res, next) {
@@ -13,10 +15,10 @@ module.exports = function (app) {
 
 	var env = process.env.NODE_ENV || 'release'
 	if ( env === 'dev') {
-        console.log('开发环境 development env~~~~');
+        utils.log('开发环境 development env~~~~');
         
 	    app.use(function(err, req, res, next) {
-	        if(err)console.log(err.message);
+	        if(err)utils.error(err.message);
 	        res.status(err.status || 500);
 	        res.render('error', {
 	            message: err.message,
@@ -25,14 +27,16 @@ module.exports = function (app) {
 	    });
 	}
 
-	// production error handler
-	// no stacktraces leaked to user
-	app.use(function(err, req, res, next) {
-	    if(err)console.log(err.message);
-	    res.status(err.status || 500);
-	    res.render('error', {
-	        message: err.message,
-	        error: {}
-	    });
-	});
+	if( env === 'release' ){
+		utils.log('生产环境 启动服务...')
+		app.use(function(err, req, res, next) {
+		    if(err)utils.error('errorHandler 出错 服务器将500',err);
+		    res.status(err.status || 500);
+		    res.render('error', {
+		        message: err.message,
+		        error: {}
+		    });
+		});
+
+	}
 }

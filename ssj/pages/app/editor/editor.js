@@ -36,23 +36,20 @@ Page({
 			icon:'jj',
 			tag:'居家'
 		},{
-			icon:'yl',
-			tag:'娱乐'
-		},{
-			icon:'tx',
-			tag:'通讯'
-		},{
 			icon:'xz',
-			tag:'学杂'
+			tag:'学习'
 		},{
 			icon:'ly',
-			tag:'旅游'
+			tag:'金融'
 		},{
 			icon:'rq',
 			tag:'人情'
 		},{
 			icon:'yiliao',
-			tag:'医疗'
+			tag:'健康'
+		},{
+			icon:'yl',
+			tag:'娱乐'
 		}]
 	},
 	data:{

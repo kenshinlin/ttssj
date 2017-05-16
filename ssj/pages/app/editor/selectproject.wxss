@@ -19,7 +19,7 @@
 
 .input-panel{
 	border-bottom: 1px solid #ddd;
-	padding-bottom: 10rpx;
+	/*padding-bottom: 6rpx;*/
 	margin-right: 20rpx;
 }
 

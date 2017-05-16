@@ -1,5 +1,5 @@
 <view class="text-normal panel flex">
-	<view wx:for="{{projects}}" wx:key="proj" class="select-proj-item text-normal-sub">
+	<view wx:for="{{projects}}" wx:key="proj" class="select-proj-item text-small">
 		<navigator url="./project?project={{item}}">{{item}}</navigator>
 	</view>
 </view>

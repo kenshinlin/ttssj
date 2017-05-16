@@ -1,8 +1,6 @@
-// var log4 = require('log4js')
+var logInstance = require('../config/log4instance')
 var path = require('path')
 
-// log4.configure(path.join(__dirname, '../config/log4js.json'))
-// var logInstance = log4.getLogger('cheese');
 
 var utils = {
 	toJson:function(req, options){
@@ -83,13 +81,6 @@ var utils = {
 		return s<=t && t<=e;
 	},
 
-	log:function( data ){
-		if( typeof data == 'object' ){
-			data = JSON.stringify(data);
-		}
-		// logInstance.info(data);
-		console.info(arguments);
-	},
 	isDirExsist:function( p, cb ){
 		utils.isExsist( p, cb, 'Directory')
 	},
@@ -118,6 +109,13 @@ var utils = {
 			}
 		});
 	}
-}
+
+};
+
+
+['log', 'debug', 'warn', 'error', 'info'].forEach(m=>{
+	var lm = m=='log'?'info':m;
+	utils[m] = logInstance[lm].bind(logInstance);
+})
 
 module.exports = utils;

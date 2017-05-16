@@ -2,7 +2,7 @@ module.exports = function (orm, db) {
     db.define('tbl_record',  {
         openid     : { type: 'text', size:800, required: true },
         money  : { type: 'text', required: true},
-        createTime   : { type: 'date'},
+        createTime   : { type: 'date', time:true},
         recordDate: {type:"text", required:true },
         tag: { type:"text", required:true},
         icon:{type:"text", required:true},
@@ -12,7 +12,7 @@ module.exports = function (orm, db) {
         project:{type:"text", size:45}
     },{
         hooks:{
-            beforeValidation:function () {
+            beforeCreate:function () {
                 this.createTime = new Date();
             }
         }

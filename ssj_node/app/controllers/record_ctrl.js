@@ -18,7 +18,7 @@ var ctrl = {
             project:params.project
         }, (err, record)=>{
             if( err ) {
-                utils.log('record_ctrl create err', err)
+                utils.error('record_ctrl create err', err)
                 return callback({msg:"添加失败"})
             }else{
                 callback(null, record)
@@ -35,7 +35,7 @@ var ctrl = {
 
         db.models.tbl_record.find({md5:md5, openid:openid}, (err, records)=>{
             if(err){
-                utils.log( 'del record err' ,err.message)
+                utils.error( 'detail find record err' ,err)
                 return callback({msg:"获取记录失败"})
             }
 
@@ -53,16 +53,16 @@ var ctrl = {
 
         db.models.tbl_record.find({md5:md5, openid:openid}, (err, records)=>{
             if(err){
-                utils.log( 'del record err' ,err.message)
+                utils.error( 'del find record err' ,err)
                 return callback({msg:"删除失败"})
             }
 
             if( !records || !records.length ){ return callback({msg:"删除失败，没有这条记录"})}
             var record = records[0];
 
-            record.remove((err)=>{
+            record.remove( err=>{
                 if(err){
-                    utils.log('del record remove err', err.message)
+                    utils.error('del record remove err', err)
                     return callback({msg:"删除失败"})
                 }else{
                     callback(null)
@@ -79,8 +79,11 @@ var ctrl = {
             recordDate: orm.lt([params.year, params.month, '00'].join('-'))
         }
 
-        db.models.tbl_record.find(query).limit(1).all(function (err, records ){
-            if( err ){console.log('findLastestOneHistoryRecordDate '+err.message);return callback({msg:"获取失败"})}
+        db.models.tbl_record.find(query).limit(1).order('-recordDate').all(function (err, records ){
+            if( err ){
+                utils.error('findLastestOneHistoryRecordDate find error:', err);
+                return callback({msg:"获取失败"})
+            }
 
             if( !!records && records.length ){
                 var r = records[0];
@@ -103,7 +106,10 @@ var ctrl = {
 
      // 找一个月的记录
     findOneMonthList:function(db, params, callback){
-        if( !params.openid || !params.year || !params.month )return callback({msg:"非法请求"});
+        if( !params.openid || !params.year || !params.month ){
+            utils.log('findOneMonthList 参数不全 params：', params)
+            return callback({msg:"非法请求"});
+        }
 
         var year = params.year,
             month=params.month;
@@ -115,7 +121,7 @@ var ctrl = {
 
         db.models.tbl_record.find(query).order('-recordDate').all(function (err, records ) {
             if( err ){
-                console.log('findOneMonthList', err.message)
+                utils.error('findOneMonthList find error', err)
                 callback({
                     msg: '获取记账数据失败'
                 });
@@ -125,7 +131,12 @@ var ctrl = {
         });   
     },
 
-    // 统计页面，获取一个月的数据
+    /**
+     * 统计页面，获取一个月的数据
+     * @param  {[type]}   req      [description]
+     * @param  {[type]}   params   [description]
+     * @param  {Function} callback [description]
+     */
     monthList:function (req, params, callback) {
         var me = this;
         var db = req.db;
@@ -137,6 +148,7 @@ var ctrl = {
 
         ctrl.findOneMonthList( db, params, (err, records)=>{
             if( err ){
+                utils.error('monthList findOneMonthList error', err)
                 callback({
                     msg: '获取记账数据失败'
                 });
@@ -147,13 +159,15 @@ var ctrl = {
 
     },
 
-    // 首页的list
+    /**
+     * 首页的list
+     * @param  {[type]}   req      [description]
+     * @param  {[type]}   params   [description]
+     * @param  {Function} callback [description]
+     */
     list:function (req, params, callback) {
         var me = this;
         var db = req.db;
-
-        // var page = params.page||1;
-        // var pagesize = params.pagesize||10;
 
         var month = ("000"+params.month).substr(-2);
         var year = params.year;
@@ -162,6 +176,7 @@ var ctrl = {
 
         ctrl.findOneMonthList( db, params, (err, records)=>{
             if( err ){
+                utils.error('首页list findOneMonthList error line 176', err)
                 callback({
                     msg: '获取记账数据失败'
                 });
@@ -171,7 +186,10 @@ var ctrl = {
             // 没找到数据，那么去找历史数据中最新一条的日期
             if( !records.length ){
                 ctrl.findLastestOneHistoryRecordDate(db, params, (err, d)=>{
-                    if( err){return callback(err)}
+                    if( err){
+                        utils.error('首页 list findLastestOneHistoryRecordDate callback error line 187', err)
+                        return callback(err)
+                    }
 
                     var isEmpty = true;
 
@@ -184,7 +202,10 @@ var ctrl = {
                     }
 
                     ctrl.findOneMonthList(db, q, (err, rs)=>{
-                        if( err ){return callback({msg:"获取记账数据失败"})}
+                        if( err ){
+                            utils.error('首页 list，当月无数据，从过往过份中找出最新一条当月的数据 findOneMonthList err line 203', err)
+                            return callback({msg:"获取记账数据失败"})
+                        }
                         return callback(null, rs)
                     })
                 })
