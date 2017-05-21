@@ -16,7 +16,16 @@ function formatNumber(n) {
   return n[1] ? n : '0' + n
 }
 
+function wxAlert(msg) {
+    wx.showModal({
+        title: '提示',
+        content: msg,
+        showCancel: false
+    });
+}
+
 module.exports = {
   formatTime: formatTime,
-  toFixed:function(num){return Math.round( num*100 )/100 }
+  toFixed:function(num){return Math.round( num*100 )/100 },
+  alert: wxAlert
 }

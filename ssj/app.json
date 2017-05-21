@@ -1,6 +1,5 @@
 {
   "pages":[
-    "pages/index/index",
 
     "pages/app/index",
     "pages/app/editor/editor",
@@ -9,8 +8,10 @@
 
     "pages/app/analysis/analysis",
     "pages/app/analysis/project",
-    "pages/app/analysis/projectlist"
+    "pages/app/analysis/projectlist",
 
+    "pages/about/index"
+    
   ],
   "window":{
     "backgroundTextStyle":"light",

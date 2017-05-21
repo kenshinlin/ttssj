@@ -1,3 +1,4 @@
+
 function request(options, app) {
 	let g = app.globalData
 
@@ -19,9 +20,9 @@ function request(options, app) {
 		method: options.method,
 
 		success:res=>{
-			if( res.statusCode != 200)return;
+            if (res.statusCode != 200) return wxAlert('请求失败');
             
-            var data = res.data;
+            let data = res.data;
 
             // 正确
             if( data.code == 0 ){
@@ -35,6 +36,8 @@ function request(options, app) {
             }
 		},
 		fail:function( data ){
+            console.log('request error', options.url, data)
+
 			if( options.error ){
 	        	options.error('请求失败')
         	}else{

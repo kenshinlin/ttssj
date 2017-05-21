@@ -172,6 +172,28 @@ Page({
         })
     },
 
+    showActionSheet:function(){
+        let actions = ['分享', '设置预算', '帮助和意见反馈']
+
+        wx.showActionSheet({
+            itemList: actions,
+            success:res=>{
+                switch (res.tapIndex)
+                {
+                    case 0:
+                    case 2:
+                        wx.navigateTo({
+                            url: '/pages/about/index?action='+actions[res.tapIndex]
+                        })
+                        break
+                    case 1:
+                        this.showBudgetModal()
+                        break
+                }
+            }
+        }) 
+    },
+
     showBudgetModal:function(){
         this.setData({budgetModalHidden:false});
     },
@@ -257,7 +279,9 @@ Page({
 
     // todo 多一个 onshow
     onLoad:function () {
-    	this.loadFirstScreenData()
+        app.initUserInfo(e=>{
+            this.loadFirstScreenData()
+        })
     },
 
     loadFirstScreenData:function(){
@@ -268,7 +292,7 @@ Page({
         var month = globalData.month||( localNow.getMonth()+1);
         var year = globalData.year||(localNow.getFullYear());
 
-        this.setData({username:userInfo.nickName})
+        this.setData({username:userInfo.nickName||"欢迎使用"})
         this.setData({month: month})
         this.setData({year: year})
         this.setData({budget:app.globalData.budget})

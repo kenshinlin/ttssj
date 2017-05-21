@@ -1,0 +1,47 @@
+<!--index.wxml-->
+<view class="container">
+    <view style="padding:50rpx" wx:if="{{action=='分享' && !canUseShareBtn}}">
+        <view class="text-danger text-bold">转发步骤</view>
+        <view>1. 点击屏幕右上角的【<text class="text-danger">...</text>】</view>
+        <view>2. 选择 【<text class="text-danger">转发</text>】</view>
+    </view>
+  <view  bindtap="bindViewTap" class="userinfo">
+    <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
+    <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+    <view class="text-center" style="margin-top:80rpx">
+        <button type="warn" 
+              wx:if="{{action=='帮助和意见反馈'}}"
+              open-type="contact" 
+              size="mini"
+              hover-class="other-button-hover" 
+              session-from="bootindex"
+              style="margin-right: 20rpx;line-height: 2.2;" 
+              >
+              意见反馈
+        </button>
+
+        <button type="warn" 
+              wx:if="{{action=='分享' && canUseShareBtn}}"
+              open-type="share" 
+              size="mini"
+              hover-class="other-button-hover" 
+              session-from="bootindex"
+              style="margin-right: 20rpx;line-height: 2.2;" 
+              >
+              分享 / 转发
+        </button>
+      <button type="warn" size="mini" wx:if="{{action=='新人'}}" >立即使用</button>
+	</view>
+  </view>
+  <view class="usermotto text-center">
+    <text class="user-motto">
+    	{{motto}}
+    </text>
+  </view>
+  <view class="classname" wx:if="{{action=='帮助和意见反馈'||action=='新人'}}" style="padding:20rpx;">
+    <view>获取更多帮助信息请关注公众号：听啃先生说H5（MrKenniu）</view>
+    <view class="text-center">
+        <image src="https://stu.kenniu.top/client/qrcode-mrken.jpg" style="width:400rpx;height:400rpx;" />
+    </view>
+  </view>
+</view>

@@ -3,15 +3,6 @@
 		<view class="banner flex flex-column">
 			<view class="text-center text-normal">
 				{{username}}
-				<button type="default" 
-		              open-type="contact" 
-		              plain="true"
-		              size="mini"
-		              hover-class="other-button-hover" 
-		              session-from="bootindex"
-		              id="btn-fb">
-		              <image src="./images/icon-fb-w.png" class="icon-fb"></image>
-		        </button>
 			</view>
 			<view class="banner-budget text-center flex-grow">
 				<view class="banner-budget-money text-largest">{{ budgetBalance }}</view>
@@ -83,7 +74,7 @@
 
 	<view class="footer flex flex-space-between">
 		<image src="./images/icon-analysis.png" class="icon" bindtap="showAnalysis"></image>
-		<image src="./images/icon-ji.png" class="icon icon-ji" bindtap="addRecord"></image>
-		<image src="./images/icon-flow.png" class="icon" bindtap="showBudgetModal"></image>
+		<image src="./images/icon-add-full.png" class="icon icon-ji" bindtap="addRecord"></image>
+		<image src="./images/icon-share.png" class="icon" bindtap="showActionSheet"></image>
 	</view>
 </view>
