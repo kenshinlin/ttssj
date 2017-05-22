@@ -32,9 +32,9 @@ log4js.configure({
         category:'fileLog'
     }],
 
-    replaceConsole:true,
+    //replaceConsole:true,
     levels:{
-        fileLog: env=='release'?'info':'debug',
+        fileLog: env=='release'?'log':'debug',
         consoleLog:'debug'
     }
 })

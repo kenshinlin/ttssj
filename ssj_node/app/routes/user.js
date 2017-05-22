@@ -9,6 +9,7 @@ router.get('/openid', (req, res, next)=>{
 	var params = req.query;
 
 	userCtrl.fetchOpenId(req, params, function (err, result) {
+		console.log('fetchOpenId resp', result)
 		if( err ){
 			res.json(utils.toJson(req, {
 				code: -1,

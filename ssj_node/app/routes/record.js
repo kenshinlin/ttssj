@@ -41,7 +41,7 @@ router.post('/item', (req, res, next)=>{
 router.post('/list', (req, res, next)=>{
 	var param = req.body;
 
-
+	console.log(req.url, param)
 	recordCtrl.list(req, param, function (err, result) {
 		if( err ){
 			res.json(utils.toJson(req, {

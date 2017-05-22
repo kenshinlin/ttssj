@@ -30,7 +30,7 @@ module.exports = function (app) {
 	if( env === 'release' ){
 		utils.log('生产环境 启动服务...')
 		app.use(function(err, req, res, next) {
-		    if(err)utils.error('errorHandler 出错 服务器将500',err);
+		    if(err)utils.error('errorHandler服务器出错', req.originalUrl, req.body, err);
 		    res.status(err.status || 500);
 		    res.render('error', {
 		        message: err.message,

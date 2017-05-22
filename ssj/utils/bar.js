@@ -62,7 +62,7 @@ class Bar{
 		let series = options.series;
 
         // var color = ['6699FF', '09BB07', 'e64340', '576b95', 'FF9933', '9966FF', '353535'];
-		var color = ['6699FF', '09BB07', 'e64340', '576b95', 'FF9933'];
+		var color = ['6699FF', '09BB07', 'e64340', '576b95', 'FF9933', '9F79EE', '00d3c7', '65c3f3'];
 		// var color = ['6699FF', '09BB07', 'e64340', '576b95'];
 		ctx.setFillStyle('#'+color[index%color.length])
 

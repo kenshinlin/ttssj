@@ -11,6 +11,7 @@ var ctrl = {
         var code = params.code
 
         if( !code ){
+	    utils.error('fetchopenid 没有传 code 参数')
             return cb({msg:"非法请求"})
         }
 
@@ -19,28 +20,29 @@ var ctrl = {
             method: 'GET'
         }, (err, res, body)=>{
                 if( err ){
-                    utils.log('fetchOpenId request err', err)
+                    utils.error('fetchOpenId request err', err)
                     cb( err )
                 }else{
                     if( body ){
                         try{
                             body = JSON.parse( body )
                             if( body.errcode ){
-                                utils.log('fetchOpenId wxresp body error', body.errmsg);
+                                utils.error('fetchOpenId wxresp body error', body.errmsg);
                                 cb({msg:body.errmsg})
                             }else{
                                 cb(null, body)
                             }
                         }catch(e){
-                            utils.log('fetchOpenId JSON.parse error catch', body , e);
+                            utils.error('fetchOpenId JSON.parse error catch', body , e);
                             cb({msg:e.message})
                         }
                     }else{
+			utils.error('fetchopenid 响应没有内容')
                         cb({msg:"响应没有内容"})
                     }
                 }
         }).on('error', err=>{
-            console.log('fetchOpenId request onerror err', err)
+            utils.error('fetchOpenId request onerror err', err)
             cb(err)
         })
     }

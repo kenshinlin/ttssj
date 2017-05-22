@@ -59,26 +59,71 @@ App({
                 success: res=>{
                     let code = res.code
 
-                    Promise.all([
+
                         
-                        this.getUserInfo(), // 获取用户昵称，头像
-                        this.getOpenID( code ) // 获取 openID
+                    this.getUserInfoNotPromise( callback ) // 获取用户昵称，头像
+                    this.getOpenIDNotPromise( code, callback ) // 获取 openID
 
-                    ]).then( result =>{
-                        let userInfo = result[0]
-                        let openid = result[1]
+                    /**
+                     * iOS 不支持Promise.all
+                     */
+                    
+                    // Promise.all([
+                        
+                    //     this.getUserInfo(), // 获取用户昵称，头像
+                    //     this.getOpenID( code ) // 获取 openID
 
-                        this.globalData.userInfo = userInfo
-                        this.globalData.openid = openid
-                        callback()
-                    }).catch( e=>{
-                        console.log('iniUserInfo error' , e)
-                        util.alert('数据初始化失败，请退出重试')
-                    })
+                    // ]).then( result =>{
+                    //     let userInfo = result[0]
+                    //     let openid = result[1]
+
+                    //     this.globalData.userInfo = userInfo
+                    //     this.globalData.openid = openid
+                        
+                    //     callback()
+
+                    // }).catch( e=>{
+                    //     console.log('iniUserInfo error' , e)
+                    //     util.alert('数据初始化失败，请退出重试')
+                    // })
                 }
             })
         }
     },
+
+    getOpenIDNotPromise:function( code, callback ){
+        http.get({
+            url: '/user/openid',
+            data: { code: code },
+            success: data => {
+                let openid = data.openid
+                this.globalData.openid = openid
+
+                if( this.globalData.userInfo){
+                    callback()
+                }
+            },
+            error: e => {console.log('fetchopenid error',e)}
+        }, this)
+    },
+
+    getUserInfoNotPromise: function( callback ){
+        wx.getUserInfo({
+            success: res=>{
+                this.globalData.userInfo = res.userInfo
+            },
+            fail: res => {
+                console.log('getUserInfo fail', res)
+                this.globalData.userInfo = true //没有拿到userInfo也不要紧
+            },
+            complete:res=>{
+                if( this.globalData.openid ){
+                    callback()
+                }
+            }
+        })
+    },
+
 
     getUserInfo:function(){
         return new Promise((resolve, reject)=>{
